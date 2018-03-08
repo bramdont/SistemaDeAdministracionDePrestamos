@@ -1,0 +1,18 @@
+﻿@{
+    ViewBag.Title = "Sobre Nosotros";
+}
+
+<div class="row bg-title">
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+        <h4 class="page-title">@ViewBag.Title</h4>
+    </div>
+    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+        <ol class="breadcrumb">
+            <li>@Html.ActionLink("Sobre Nosotros", "About", "Home")</li>
+        </ol>
+    </div>
+    <!-- /.col-lg-12 -->
+</div>
+<h3>@ViewBag.Message</h3>
+
+<p>Template: Ample Admin By wrappixel.com</p>
