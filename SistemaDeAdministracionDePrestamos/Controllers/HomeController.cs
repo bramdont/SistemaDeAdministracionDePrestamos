@@ -23,7 +23,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
         public ActionResult Contact()
         {
-            ViewBag.Message = "Tu pagina de contacto.";
+            ViewBag.Message = "Tu pagina de contacto. Se debe modificar con los valores del contacto real";
 
             return View();
         }
