@@ -12,7 +12,7 @@ namespace SistemaDeAdministracionDePrestamos.Models
         //a los que se les prestara dinero
         [Required]
         public int Id { get; set; }
-        [Required]
+        [Required(ErrorMessage ="Por favor, rellene el {0} con los datos del cliente")]
         public string Nombre { get; set; }
         public string Cedula { get; set; }
         public string Direccion { get; set; }

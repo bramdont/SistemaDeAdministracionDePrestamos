@@ -29,5 +29,6 @@ namespace SistemaDeAdministracionDePrestamos.Models
         {
             return new ApplicationDbContext();
         }
+        public DbSet<Cliente> Clientes { get; set; }
     }
 }

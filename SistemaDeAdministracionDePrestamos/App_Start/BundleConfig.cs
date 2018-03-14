@@ -23,7 +23,8 @@ namespace SistemaDeAdministracionDePrestamos
                         "~/Content/plugins/bower_components/jquery-sparkline/jquery.sparkline.min.js",
                         "~/Content/html/js/custom.min.js",
                         "~/Content/html/js/dashboard1.js",
-                        "~/Content/plugins/bower_components/toast-master/js/jquery.toast.js"));
+                        "~/Content/plugins/bower_components/toast-master/js/jquery.toast.js",
+                        "~/Scripts/otf.js"));
 
            /* bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js")); */
@@ -50,7 +51,8 @@ namespace SistemaDeAdministracionDePrestamos
                       "~/Content/plugins/bower_components/chartist-plugin-tooltip-master/dist/chartist-plugin-tooltip.css",
                       "~/Content/html/css/animate.css",
                       "~/Content/html/css/style.css",
-                      "~/Content/html/css/colors/default.css"));
+                      "~/Content/html/css/colors/default.css",
+                      "~/Content/Pagedlist.css"));
         }
     }
 }

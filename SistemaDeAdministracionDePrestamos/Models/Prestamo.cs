@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SistemaDeAdministracionDePrestamos.Models
@@ -17,5 +18,6 @@ namespace SistemaDeAdministracionDePrestamos.Models
         public DateTime Fecha { get; set; }
         public bool Estatus { get; set; }
         public Cliente Cliente { get; set; }
+        public List<Recibo> Recibos { get; set; }
     }
 }
