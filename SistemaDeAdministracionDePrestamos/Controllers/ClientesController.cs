@@ -13,12 +13,13 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 {
     public class ClientesController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private ApplicationDbContext _db = new ApplicationDbContext();
 
         // GET: Clientes
         public ActionResult Index(int page = 1)
         {
-            var model = db.Clientes.OrderBy(c => c.Nombre).ToList().ToPagedList(page, 20);
+            //El metodo ToPagedList es posible usarlo luego de descargar la referencia PagedList.Mvc en la nugetPackager
+            var model = _db.Clientes.OrderBy(c => c.Nombre).ToList().ToPagedList(page, 15);
 
             if (Request.IsAjaxRequest())
             {
@@ -40,7 +41,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Cliente cliente = db.Clientes.Find(id);
+            Cliente cliente = _db.Clientes.Find(id);
             if (cliente == null)
             {
                 return HttpNotFound();
@@ -55,16 +56,14 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         }
 
         // POST: Clientes/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Nombre,Cedula,Direccion,Telefono")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {
-                db.Clientes.Add(cliente);
-                db.SaveChanges();
+                _db.Clientes.Add(cliente);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -78,7 +77,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Cliente cliente = db.Clientes.Find(id);
+            Cliente cliente = _db.Clientes.Find(id);
             if (cliente == null)
             {
                 return HttpNotFound();
@@ -87,16 +86,14 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         }
 
         // POST: Clientes/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Nombre,Cedula,Direccion,Telefono")] Cliente cliente)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(cliente).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(cliente).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(cliente);
@@ -109,7 +106,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Cliente cliente = db.Clientes.Find(id);
+            Cliente cliente = _db.Clientes.Find(id);
             if (cliente == null)
             {
                 return HttpNotFound();
@@ -122,9 +119,9 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Cliente cliente = db.Clientes.Find(id);
-            db.Clientes.Remove(cliente);
-            db.SaveChanges();
+            Cliente cliente = _db.Clientes.Find(id);
+            _db.Clientes.Remove(cliente);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -132,7 +129,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

@@ -7,7 +7,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <link rel="icon" type="image/png" sizes="16x16" href="~/Content/plugins/images/favicon.png">
-    <title>@ViewBag.Title - My ASP.NET Application</title>
+    <title>@ViewBag.Title</title>
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
 
@@ -84,7 +84,7 @@
 
                         </li>
                         <li>
-                            <a href="@Url.Action("About", "Home")" class="waves-effect"><i class="fa fa-book fa-fw" aria-hidden="true"></i>Sobre Nosotros</a>
+                            <a href="@Url.Action("Index", "Clientes")" class="waves-effect"><i class="fa fa-group fa-fw" aria-hidden="true"></i>Clientes</a>
                         </li>
                         <li>
                             <a href="@Url.Action("Contact", "Home")" class="waves-effect"><i class="fa fa-user fa-fw" aria-hidden="true"></i>Contact</a>
@@ -116,19 +116,20 @@
             <div class="container-fluid">
                 @RenderBody()
                 <hr />
-                <footer class="footer">
-                    <nav class="pull-left">
-                        <ul class="nav navbar-nav">
-                            <li>@Html.ActionLink("Tablero", "Index", "Home")</li> 
-                            <li>@Html.ActionLink("Sobre Nosotros", "About", "Home")</li> 
-                            <li>@Html.ActionLink("Contacto", "Contact", "Home")</li>
-                        </ul>
-                    </nav>
-                    <p class="pull-right">&copy; @DateTime.Now.Year - Sistema de Administración de Préstamos by Bramdont García</p>
-                </footer>
             </div>
         </div>
+        
     </div>
+    <footer class="footer">
+        <nav class="pull-left">
+            <ul class="nav navbar-nav">
+                <li>@Html.ActionLink("Tablero", "Index", "Home")</li>
+                <li>@Html.ActionLink("Clientes", "index", "Clientes")</li>
+                <li>@Html.ActionLink("Contacto", "Contact", "Home")</li>
+            </ul>
+        </nav>
+        <p class="pull-right">&copy; @DateTime.Now.Year - Sistema de Administración de Préstamos by Bramdont García</p>
+    </footer>
 
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")

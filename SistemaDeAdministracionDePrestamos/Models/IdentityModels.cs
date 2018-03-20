@@ -30,5 +30,8 @@ namespace SistemaDeAdministracionDePrestamos.Models
             return new ApplicationDbContext();
         }
         public DbSet<Cliente> Clientes { get; set; }
+        public DbSet<Prestamo> Prestamos { get; set; }
+        public DbSet<Recibo> Recibos { get; set; }
+
     }
 }

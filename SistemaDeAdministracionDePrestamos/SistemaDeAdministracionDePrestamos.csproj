@@ -208,6 +208,7 @@
     <Compile Include="Controllers\ClientesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\PrestamosController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -223,6 +224,14 @@
     <Compile Include="Migrations\201803131824115_SAPContext1.Designer.cs">
       <DependentUpon>201803131824115_SAPContext1.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803152020200_PrestyReci.cs" />
+    <Compile Include="Migrations\201803152020200_PrestyReci.Designer.cs">
+      <DependentUpon>201803152020200_PrestyReci.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803152043539_prestamos.cs" />
+    <Compile Include="Migrations\201803152043539_prestamos.Designer.cs">
+      <DependentUpon>201803152043539_prestamos.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AbonoRecibo.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
@@ -234,6 +243,7 @@
     <Compile Include="Models\Prestamo.cs" />
     <Compile Include="Models\Recibo.cs" />
     <Compile Include="Models\SolicitudPrestamo.cs" />
+    <Compile Include="Models\ViewModels\PrestamoViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -769,6 +779,11 @@
     <Content Include="Views\Clientes\Edit.cshtml" />
     <Content Include="Views\Clientes\Index.cshtml" />
     <Content Include="Views\Clientes\_Clientes.cshtml" />
+    <Content Include="Views\Prestamos\Create.cshtml" />
+    <Content Include="Views\Prestamos\Delete.cshtml" />
+    <Content Include="Views\Prestamos\Details.cshtml" />
+    <Content Include="Views\Prestamos\Edit.cshtml" />
+    <Content Include="Views\Prestamos\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -793,6 +808,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803131824115_SAPContext1.resx">
       <DependentUpon>201803131824115_SAPContext1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803152020200_PrestyReci.resx">
+      <DependentUpon>201803152020200_PrestyReci.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803152043539_prestamos.resx">
+      <DependentUpon>201803152043539_prestamos.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
