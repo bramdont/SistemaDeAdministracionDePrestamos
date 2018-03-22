@@ -4,6 +4,22 @@
     ViewBag.Title = "Nuevo Prestamo";
 }
 
+<div class="row bg-title">
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+        <h4 class="page-title">Prestamos</h4>
+    </div>
+    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+        <ol class="breadcrumb">
+            <li>
+                @Html.ActionLink("Prestamos", "Index")
+            </li>
+            <li>
+                @Html.ActionLink("Nuevo prestamo", "Create")
+            </li>
+        </ol>
+    </div>
+</div>
+
 <h2>Realizar Prestamo</h2>
 
 @using (Html.BeginForm())

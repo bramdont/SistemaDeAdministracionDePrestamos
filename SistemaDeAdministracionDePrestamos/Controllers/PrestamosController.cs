@@ -22,7 +22,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
 
             var ViewModel = (from vm in model
-                             //where vm.Estatus == true
+                                 //where vm.Estatus == true
                              select new PrestamoViewModel
                              {
                                  Id = vm.Id,
@@ -44,15 +44,15 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var model = _db.Prestamos.Find(id);
-            var estatus = (model.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo;
+            var pModel = _db.Prestamos.Find(id);
+            var estatus = (pModel.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo;
 
             PrestamoViewModel prestamoViewModel = new PrestamoViewModel
             {
-                Id = model.Id,
-                Cliente = (_db.Clientes.Find(model.ClienteId)).Nombre,
-                Monto = model.Monto,
-                Fecha = model.Fecha,
+                Id = pModel.Id,
+                Cliente = (_db.Clientes.Find(pModel.ClienteId)).Nombre,
+                Monto = pModel.Monto,
+                Fecha = pModel.Fecha,
                 Status = estatus
             };
 
@@ -71,7 +71,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
             PrestamoViewModel model = new PrestamoViewModel();
 
-            model.Clientes = obtenerListaClientes(NombreClientes); 
+            model.Clientes = obtenerListaClientes(NombreClientes);
             #endregion
 
             return View(model);
@@ -164,21 +164,40 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                 return RedirectToAction("Index");
             }
             return View(prestamoViewModel);
+
         }
 
         // GET: Prestamos/Delete/5
         public ActionResult Delete(int? id)
         {
-            //if (id == null)
-            //{
-            //    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            //}
-            //PrestamoViewModel prestamoViewModel = _db.PrestamoViewModels.Find(id);
-            //if (prestamoViewModel == null)
-            //{
-            //    return HttpNotFound();
-            //}
-            return View(/*prestamoViewModel*/);
+            if (id == null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            Prestamo pModel = _db.Prestamos.Find(id);
+
+            if (pModel == null)
+            {
+                return HttpNotFound();
+            }
+            else
+            {
+                var estatus = (pModel.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo;
+
+                PrestamoViewModel prestamoViewModel = new PrestamoViewModel
+                {
+                    Id = pModel.Id,
+                    Cliente = (_db.Clientes.Find(pModel.ClienteId)).Nombre,
+                    Monto = pModel.Monto,
+                    Fecha = pModel.Fecha,
+                    Status = estatus
+                };
+
+
+                return View(prestamoViewModel);
+            }
+
         }
 
         // POST: Prestamos/Delete/5
@@ -186,9 +205,9 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            //PrestamoViewModel prestamoViewModel = _db.PrestamoViewModels.Find(id);
-            //_db.PrestamoViewModels.Remove(prestamoViewModel);
-            //_db.SaveChanges();
+            Prestamo pModel = _db.Prestamos.Find(id);
+            _db.Prestamos.Remove(pModel);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
         private IEnumerable<SelectListItem> obtenerListaClientes(List<string> nombreClientes)
@@ -207,20 +226,6 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             return SelectListItem;
         }
 
-        //private IEnumerable<SelectListItem> obtenerListaEstatus (List<PrestamoViewModel.estatus> statu)
-        //{
-        //    List<SelectListItem> SelectListItem = new List<SelectListItem>();
-
-        //    foreach (var item in statu)
-        //    {
-        //        SelectListItem.Add(new SelectListItem
-        //        {
-        //            Value = item.ToString(),
-        //            Text = item.ToString()
-        //        });
-        //    }
-        //    return SelectListItem;
-        //}
         protected override void Dispose(bool disposing)
         {
             if (disposing)

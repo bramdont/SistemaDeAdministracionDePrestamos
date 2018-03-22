@@ -1,13 +1,28 @@
 ﻿@model SistemaDeAdministracionDePrestamos.Models.ViewModels.PrestamoViewModel
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Detalles del prestamo";
 }
 
-<h2>Details</h2>
+<div class="row bg-title">
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+        <h4 class="page-title">Prestamos</h4>
+    </div>
+    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+        <ol class="breadcrumb">
+            <li>
+                @Html.ActionLink("Prestamos", "Index")
+            </li>
+            <li class="active">
+                @Html.ActionLink("Detalles de Prestamo", "Details")
+            </li>
+        </ol>
+    </div>
+</div>
+
+<h2>Detalles del prestamo</h2>
 
 <div>
-    <h4>PrestamoViewModel</h4>
     <hr />
     <dl class="dl-horizontal">
         <dt>
@@ -39,12 +54,12 @@
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Estatus)
+            @Html.DisplayFor(model => model.Status)
         </dd>
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-default" }) |
+    @Html.ActionLink("Modificar", "Edit", new { id = Model.Id }, new { @class = "btn btn-info" })
 </p>

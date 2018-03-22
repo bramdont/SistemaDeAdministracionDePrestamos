@@ -4,27 +4,42 @@
     ViewBag.Title = "Prestamos";
 }
 
+<div class="row bg-title">
+    <div class="col-lg-3 col-md-4 col-sm-4 col-xs-12">
+        <h4 class="page-title">Prestamos</h4>
+    </div>
+    <div class="col-lg-9 col-sm-8 col-md-8 col-xs-12">
+        <ol class="breadcrumb">
+            <li>
+                @Html.ActionLink("Prestamos", "Index")
+            </li>
+        </ol>
+    </div>
+</div>
+
 <h2>Listado de prestamos</h2>
 
 <p>
     @Html.ActionLink("Nuevo Prestamo", "Create", null, new { @class = "btn btn-success" })
 </p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Cliente)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Monto)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Fecha)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Estatus)
-        </th>
-        <th></th>
-    </tr>
+<table class="table table-hover">
+    <thead class="thead-dark">
+        <tr class="text-uppercase">
+            <th>
+                @Html.DisplayNameFor(model => model.Cliente)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Monto)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Fecha)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Estatus)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
 
 @foreach (var item in Model) {
     <tr>
