@@ -8,6 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using SistemaDeAdministracionDePrestamos.Models;
 using SistemaDeAdministracionDePrestamos.Models.ViewModels;
+using PagedList;
 
 namespace SistemaDeAdministracionDePrestamos.Controllers
 {
@@ -16,13 +17,17 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         private ApplicationDbContext _db = new ApplicationDbContext();
 
         // GET: Prestamos
-        public ActionResult Index()
+        public ActionResult Index(int page = 1)
         {
             var model = _db.Prestamos.ToList();
 
+            if (model == null)
+            {
+                return HttpNotFound();
+            }
 
             var ViewModel = (from vm in model
-                                 //where vm.Estatus == true
+                             orderby vm.Cliente
                              select new PrestamoViewModel
                              {
                                  Id = vm.Id,
@@ -30,9 +35,14 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                                  Monto = vm.Monto,
                                  Fecha = vm.Fecha,
                                  Status = (vm.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo
-                             }).ToList();
+                             }).ToList().ToPagedList(page, 15);
 
-            return View(ViewModel.OrderBy(c => c.Cliente));
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_Prestamos", ViewModel);
+            }
+
+            return View(ViewModel);
         }
 
         // GET: Prestamos/Details/5
@@ -96,13 +106,40 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
             if (ModelState.IsValid)
             {
+                //Se guarda el prestamo para que genere un id de prestamo
                 _db.Prestamos.Add(pModel);
                 _db.SaveChanges();
+
+                //Se busca el prestamo recien hecho para utilizar su id para crear los recibos de ese prestamo
+                prestamoViewModel.Id =
+                    (_db.Prestamos
+                    .Where(p => p.ClienteId == Cliente.Id && p.Monto == prestamoViewModel.Monto && p.Fecha == prestamoViewModel.Fecha).Single()
+                    ).Id;
+
+                List<Recibo> recibos = GenerarRecibos(prestamoViewModel);
+
+                // Si no se pueden generar los recibos (devuleve null), 
+                //se elimina el prestamo de la db para poder intentarlo de nuevo
+                if (recibos == null)
+                {
+                    _db.Prestamos.Remove(pModel);
+                    _db.SaveChanges();
+                    return HttpNotFound();
+                }
+                //Si el resulgado de GenerarRecibos no es null, se guardan los recibos en la db
+                foreach (var recibo in recibos)
+                {
+                    _db.Recibos.Add(recibo);
+                    _db.SaveChanges();
+                }
+
+
                 return RedirectToAction("Index");
             }
 
             return View(prestamoViewModel);
         }
+
 
         // GET: Prestamos/Edit/5
         public ActionResult Edit(int? id)
@@ -194,10 +231,8 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                     Status = estatus
                 };
 
-
                 return View(prestamoViewModel);
             }
-
         }
 
         // POST: Prestamos/Delete/5
@@ -226,6 +261,44 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             return SelectListItem;
         }
 
+        //Este metodo será invocado por el controlador de prestamos,
+        // al hacerlo, generará los recibos correspondientes a dicho prestamo.
+        private List<Recibo> GenerarRecibos(PrestamoViewModel pModel)
+        {
+
+            if (pModel == null)
+            {
+                return null;
+            }
+
+            else
+            {
+                List<Recibo> receipts = new List<Recibo>();
+
+                int monto = (pModel.Monto / 10);
+
+                DateTime fecha = pModel.Fecha;
+
+                int idPrestamo = pModel.Id;
+
+                for (int i = 1; i <= 13; i++)
+                {
+                    fecha = fecha.AddDays(7); 
+
+                    receipts.Add(new Recibo
+                    {
+                        Cuota = i,
+                        MontoPago = monto,
+                        FechaPago = fecha,
+                        Estatus = true,
+                        PrestamoId = idPrestamo
+
+                    });
+                }
+
+                return receipts;
+            }
+        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)

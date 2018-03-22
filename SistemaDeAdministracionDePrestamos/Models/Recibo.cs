@@ -1,4 +1,6 @@
-﻿using System;
+﻿using SistemaDeAdministracionDePrestamos.Models.ViewModels;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace SistemaDeAdministracionDePrestamos.Models
