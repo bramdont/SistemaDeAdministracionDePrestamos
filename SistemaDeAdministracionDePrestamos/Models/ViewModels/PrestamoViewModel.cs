@@ -17,6 +17,7 @@ namespace SistemaDeAdministracionDePrestamos.Models.ViewModels
         public estatus Status { get; set; }
         public IEnumerable<SelectListItem> Clientes { get; set; }
         public IEnumerable<SelectListItem> Estatus { get; set; }
+        public List<Recibo> Recibos { get; set; }
         public enum estatus
         {
             Activo,

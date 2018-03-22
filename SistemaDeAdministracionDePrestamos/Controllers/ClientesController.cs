@@ -19,7 +19,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         public ActionResult Index(int page = 1)
         {
             //El metodo ToPagedList es posible usarlo luego de descargar la referencia PagedList.Mvc en la nugetPackager
-            var model = _db.Clientes.OrderBy(c => c.Nombre).ToList().ToPagedList(page, 15);
+            var model = _db.Clientes.OrderBy(c => c.Nombre).ToList().ToPagedList(page, 10);
 
             if (Request.IsAjaxRequest())
             {

@@ -59,6 +59,9 @@
 
     </dl>
 </div>
+
+@Html.Partial("_Recibos", Model)
+
 <p>
     @Html.ActionLink("Volver", "Index", null, new { @class = "btn btn-default" }) |
     @Html.ActionLink("Modificar", "Edit", new { id = Model.Id }, new { @class = "btn btn-info" })

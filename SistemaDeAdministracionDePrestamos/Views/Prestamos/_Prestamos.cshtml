@@ -1,0 +1,61 @@
+﻿
+@model IPagedList<PrestamoViewModel>
+
+@{
+    ViewBag.Title = "Prestamos";
+}
+
+<div id="prestamosList">
+    <div class="pagedList" data-otf-target="#prestamosList">
+        @Html.PagedListPager(Model, page => @Url.Action("Index", new { page }), PagedListRenderOptions.MinimalWithPageCountText)
+    </div>
+
+    <table class="table table-hover">
+        <thead class="thead-dark">
+            <tr class="text-uppercase">
+                <th>
+                    Cliente
+                </th>
+                <th>
+                    Monto
+                </th>
+                <th>
+                    Fecha
+                </th>
+                <th>
+                    Estatus
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+
+        @foreach (var item in Model)
+        {
+            <tbody data-otg-ajax="true" data-otf-target="#prestamosList">
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Cliente)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Monto)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Fecha)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Status)
+                    </td>
+                    <td>
+                        @Html.ActionLink("Modificar", "Edit", new { id = item.Id }, new { @class = "btn btn-info" }) |
+                        @Html.ActionLink("Detalles", "Details", new { id = item.Id }, new { @class = "btn btn-primary" }) |
+                        @Html.ActionLink("Eliminar", "Delete", new { id = item.Id }, new { @class = "btn btn-danger" })
+                    </td>
+                </tr>
+            </tbody>
+        }
+
+    </table>
+    <div class="pagedList" data-otf-target="#prestamosList">
+        @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptions.MinimalWithPageCountText)
+    </div>
+</div>

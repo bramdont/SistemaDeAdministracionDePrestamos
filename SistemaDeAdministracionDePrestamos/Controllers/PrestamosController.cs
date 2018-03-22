@@ -35,7 +35,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                                  Monto = vm.Monto,
                                  Fecha = vm.Fecha,
                                  Status = (vm.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo
-                             }).ToList().ToPagedList(page, 15);
+                             }).ToList().ToPagedList(page, 10);
 
             if (Request.IsAjaxRequest())
             {
@@ -56,6 +56,9 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
             var pModel = _db.Prestamos.Find(id);
             var estatus = (pModel.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo;
+            var recibos = _db.Recibos
+                .Where(r => r.PrestamoId == id)
+                .ToList();
 
             PrestamoViewModel prestamoViewModel = new PrestamoViewModel
             {
@@ -63,7 +66,8 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                 Cliente = (_db.Clientes.Find(pModel.ClienteId)).Nombre,
                 Monto = pModel.Monto,
                 Fecha = pModel.Fecha,
-                Status = estatus
+                Status = estatus,
+                Recibos = recibos
             };
 
             if (prestamoViewModel == null)
@@ -281,6 +285,8 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
                 int idPrestamo = pModel.Id;
 
+                bool status = (pModel.Status == PrestamoViewModel.estatus.Activo) ? true : false;
+
                 for (int i = 1; i <= 13; i++)
                 {
                     fecha = fecha.AddDays(7); 
@@ -290,7 +296,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                         Cuota = i,
                         MontoPago = monto,
                         FechaPago = fecha,
-                        Estatus = true,
+                        Estatus = status,
                         PrestamoId = idPrestamo
 
                     });

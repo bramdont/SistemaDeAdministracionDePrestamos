@@ -1,0 +1,42 @@
+﻿@model PrestamoViewModel
+<div align ="center">
+    <h3>Recibos del prestamo</h3>
+    <table class="table table-hover">
+        <thead class="text-uppercase">
+            <tr>
+                <th>
+                    Cuota
+                </th>
+                <th>
+                    Monto
+                </th>
+                <th>
+                    Fecha
+                </th>
+                <th>
+                    Estatus
+                </th>
+            </tr>
+        </thead>
+        @foreach (var item in Model.Recibos)
+        {
+            <tbody>
+                <tr>
+                    <td>
+                        @Html.DisplayFor(r => item.Cuota)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(r => item.MontoPago)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(r => item.FechaPago)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(r => item.Estatus)
+                    </td>
+                </tr>
+            </tbody>
+        }
+
+    </table>
+</div>

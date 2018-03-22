@@ -17,6 +17,7 @@ namespace SistemaDeAdministracionDePrestamos.Models
         /* [Display (Name = "Total Prestado")]
         public int MontoTotal { get; set; } */
         [Display (Name = "Fecha de pago")]
+        [DisplayFormat(DataFormatString ="{0:dd/MM/yyyy}", ApplyFormatInEditMode =true)]
         public DateTime FechaPago { get; set; }
         public bool Estatus { get; set; }
         [Display(Name ="Prestamo")]
