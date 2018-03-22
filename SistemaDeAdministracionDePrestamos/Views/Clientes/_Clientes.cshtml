@@ -1,7 +1,7 @@
 ﻿@model IPagedList<Cliente>
 
 <div id="clientesList">
-    <div class="pagedList" data-otf-target ="#clientesList">
+    <div class="pagedList" data-otf-target="#clientesList">
         @Html.PagedListPager(Model, page => Url.Action("Index", new { page }), PagedListRenderOptions.MinimalWithPageCountText)
     </div>
 
