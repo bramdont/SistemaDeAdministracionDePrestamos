@@ -21,11 +21,13 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             //El metodo ToPagedList es posible usarlo luego de descargar la referencia PagedList.Mvc en la nugetPackager
             var model = _db.Clientes.OrderBy(c => c.Nombre).ToList().ToPagedList(page, 10);
 
+            //Si la solicitud es del tipo ajax, solo se actualizara el contenido parcial del a vida
+            // en el partialView es donde esta la tabla donde se ponen los datos de los clientes
             if (Request.IsAjaxRequest())
             {
                 return PartialView("_Clientes", model);
             }
-
+            //Si la solicitud no es del tipo ajax, se devolvera la vista completa
             if (model != null)
             {
                 return View(model);

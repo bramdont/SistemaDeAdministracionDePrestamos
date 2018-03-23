@@ -26,6 +26,9 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                 return HttpNotFound();
             }
 
+            //introducimos los datos de los prestamos en un prestamoViewModel que
+            // es un modelo que nos facilitara mostrar datos de varias tablas juntas
+            // para una mejor comprension de la informacion por parte del usuario final
             var ViewModel = (from vm in model
                              orderby vm.Cliente
                              select new PrestamoViewModel
@@ -37,11 +40,13 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                                  Status = (vm.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo
                              }).ToList().ToPagedList(page, 10);
 
+            //Si la solicitud es de tipo ajax, solo se volvera a cargar una porcion de la pagina actual
+            // (la tabla con los datos de los prestamos)
             if (Request.IsAjaxRequest())
             {
                 return PartialView("_Prestamos", ViewModel);
             }
-
+            // Si la solicutid no es de tipo ajax, se cargara la vista completa
             return View(ViewModel);
         }
 
@@ -55,7 +60,13 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             }
 
             var pModel = _db.Prestamos.Find(id);
+            //La expresion luego de la variable estatus es un if de forma conta.
+            // si la condicion dada se cumple, la variable tendra el valor de lo que aparece luego del signo
+            //de interrogacion, si la condicion no se cumple, el valor sera el que aparece luego de los dos puntos.
             var estatus = (pModel.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo;
+           
+            //Se buscan todos los recibos pertenecientes a un prestamo
+            // para mostrarlos en los detalles del prestamo.
             var recibos = _db.Recibos
                 .Where(r => r.PrestamoId == id)
                 .ToList();
@@ -100,12 +111,14 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
             var Cliente = _db.Clientes.Where(c => c.Nombre == prestamoViewModel.Cliente).First();
 
+            var status = (prestamoViewModel.Status == PrestamoViewModel.estatus.Activo) ? true : false;
+
             var pModel = new Prestamo
             {
                 ClienteId = Cliente.Id,
                 Monto = prestamoViewModel.Monto,
                 Fecha = prestamoViewModel.Fecha,
-                Estatus = (prestamoViewModel.Status == PrestamoViewModel.estatus.Activo) ? true : false
+                Estatus = status
             };
 
             if (ModelState.IsValid)
@@ -249,6 +262,8 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
+        //Este metodo genera una lista con los nombres de los clientes y los prepara
+        // para que puedan utilizarse en el dropDownList (que sean del tipo SelectListItem)
         private IEnumerable<SelectListItem> obtenerListaClientes(List<string> nombreClientes)
         {
             List<SelectListItem> SelectListItem = new List<SelectListItem>();
