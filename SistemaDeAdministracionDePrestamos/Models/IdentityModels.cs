@@ -32,6 +32,7 @@ namespace SistemaDeAdministracionDePrestamos.Models
         public DbSet<Cliente> Clientes { get; set; }
         public DbSet<Prestamo> Prestamos { get; set; }
         public DbSet<Recibo> Recibos { get; set; }
+        //public DbSet<PrestamoPendiente> PrestamosPendientes { get; set; }
 
     }
 }

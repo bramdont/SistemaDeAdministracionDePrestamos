@@ -9,45 +9,54 @@ using System.Web.Mvc;
 using SistemaDeAdministracionDePrestamos.Models;
 using SistemaDeAdministracionDePrestamos.Models.ViewModels;
 using PagedList;
+using SistemaDeAdministracionDePrestamos.BusinessLogic;
 
 namespace SistemaDeAdministracionDePrestamos.Controllers
 {
-    public class PrestamosController : Controller
+    public partial class PrestamosController : Controller
     {
         private ApplicationDbContext _db = new ApplicationDbContext();
 
         // GET: Prestamos
         public ActionResult Index(int page = 1)
         {
-            var model = _db.Prestamos.ToList();
-
-            if (model == null)
-            {
-                return HttpNotFound();
-            }
+            IPagedList<PrestamoViewModel> viewModel;
+            PrestamosService prestamosServ = new PrestamosService();
+            
 
             //introducimos los datos de los prestamos en un prestamoViewModel que
             // es un modelo que nos facilitara mostrar datos de varias tablas juntas
             // para una mejor comprension de la informacion por parte del usuario final
-            var ViewModel = (from vm in model
-                             orderby vm.Cliente
-                             select new PrestamoViewModel
-                             {
-                                 Id = vm.Id,
-                                 Cliente = (_db.Clientes.Find(vm.ClienteId)).Nombre,
-                                 Monto = vm.Monto,
-                                 Fecha = vm.Fecha,
-                                 Status = (vm.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo
-                             }).ToList().ToPagedList(page, 10);
 
+            //Este consulta traera todos los prestamos (realizados y pendientes)
+            //var todosPrestamos = (from vm in model
+            //                 orderby vm.Cliente
+            //                 select new PrestamoViewModel
+            //                 {
+            //                     Id = vm.Id,
+            //                     Cliente = (_db.Clientes.Find(vm.ClienteId)).Nombre,
+            //                     Monto = vm.Monto,
+            //                     Fecha = vm.Fecha,
+            //                     Status = (vm.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo
+            //                 }).ToList();
+
+           
+
+            // esta linea de codigo tomara los prestamos no pendientes y lo convertira en IPageList
+            viewModel = prestamosServ.ObtenerPrestamosRealizados().ToPagedList(page, 10);
+
+            if (viewModel == null)
+            {
+                return HttpNotFound();
+            }
             //Si la solicitud es de tipo ajax, solo se volvera a cargar una porcion de la pagina actual
             // (la tabla con los datos de los prestamos)
             if (Request.IsAjaxRequest())
             {
-                return PartialView("_Prestamos", ViewModel);
+                return PartialView("_Prestamos", viewModel);
             }
             // Si la solicutid no es de tipo ajax, se cargara la vista completa
-            return View(ViewModel);
+            return View(viewModel);
         }
 
         // GET: Prestamos/Details/5
@@ -59,27 +68,10 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
 
-            var pModel = _db.Prestamos.Find(id);
-            //La expresion luego de la variable estatus es un if de forma conta.
-            // si la condicion dada se cumple, la variable tendra el valor de lo que aparece luego del signo
-            //de interrogacion, si la condicion no se cumple, el valor sera el que aparece luego de los dos puntos.
-            var estatus = (pModel.Estatus == true) ? PrestamoViewModel.estatus.Activo : PrestamoViewModel.estatus.Inactivo;
-           
-            //Se buscan todos los recibos pertenecientes a un prestamo
-            // para mostrarlos en los detalles del prestamo.
-            var recibos = _db.Recibos
-                .Where(r => r.PrestamoId == id)
-                .ToList();
+            PrestamoViewModel prestamoViewModel = new PrestamoViewModel();
+            PrestamosService prestamosServ = new PrestamosService();
 
-            PrestamoViewModel prestamoViewModel = new PrestamoViewModel
-            {
-                Id = pModel.Id,
-                Cliente = (_db.Clientes.Find(pModel.ClienteId)).Nombre,
-                Monto = pModel.Monto,
-                Fecha = pModel.Fecha,
-                Status = estatus,
-                Recibos = recibos
-            };
+            prestamoViewModel = prestamosServ.ObtenerPrestamo(id);
 
             if (prestamoViewModel == null)
             {
@@ -91,12 +83,13 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         // GET: Prestamos/Create
         public ActionResult Create()
         {
-            #region Porpular DropDownList con nombres de clientes
-            List<string> NombreClientes = _db.Clientes.Select(c => c.Nombre).ToList();
-
             PrestamoViewModel model = new PrestamoViewModel();
+            PrestamosService prestamosServ = new PrestamosService();
 
-            model.Clientes = obtenerListaClientes(NombreClientes);
+            #region Porpular DropDownList con nombres de clientes
+            
+            model.Clientes = prestamosServ.ObtenerListaClientes();
+
             #endregion
 
             return View(model);
@@ -113,6 +106,8 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
 
             var status = (prestamoViewModel.Status == PrestamoViewModel.estatus.Activo) ? true : false;
 
+            PrestamosService prestamosServ = new PrestamosService();
+
             var pModel = new Prestamo
             {
                 ClienteId = Cliente.Id,
@@ -127,30 +122,32 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
                 _db.Prestamos.Add(pModel);
                 _db.SaveChanges();
 
-                //Se busca el prestamo recien hecho para utilizar su id para crear los recibos de ese prestamo
-                prestamoViewModel.Id =
-                    (_db.Prestamos
-                    .Where(p => p.ClienteId == Cliente.Id && p.Monto == prestamoViewModel.Monto && p.Fecha == prestamoViewModel.Fecha).Single()
-                    ).Id;
-
-                List<Recibo> recibos = GenerarRecibos(prestamoViewModel);
-
-                // Si no se pueden generar los recibos (devuleve null), 
-                //se elimina el prestamo de la db para poder intentarlo de nuevo
-                if (recibos == null)
+                if (!prestamosServ.EstaPendiente(pModel))
                 {
-                    _db.Prestamos.Remove(pModel);
-                    _db.SaveChanges();
-                    return HttpNotFound();
-                }
-                //Si el resulgado de GenerarRecibos no es null, se guardan los recibos en la db
-                foreach (var recibo in recibos)
-                {
-                    _db.Recibos.Add(recibo);
-                    _db.SaveChanges();
-                }
+                    //Se busca el prestamo recien hecho para utilizar su id para crear los recibos de ese prestamo
+                    prestamoViewModel.Id =
+                        (_db.Prestamos
+                        .Where(p => p.ClienteId == Cliente.Id && p.Monto == prestamoViewModel.Monto && p.Fecha == prestamoViewModel.Fecha).Single()
+                        ).Id;
 
+                    List<Recibo> recibos = prestamosServ.GenerarRecibos(prestamoViewModel);
 
+                    // Si no se pueden generar los recibos (devuleve null), 
+                    //se elimina el prestamo de la db para poder intentarlo de nuevo
+                    if (recibos == null)
+                    {
+                        _db.Prestamos.Remove(pModel);
+                        _db.SaveChanges();
+                        return HttpNotFound();
+                    }
+                    //Si el resulgado de GenerarRecibos no es null, se guardan los recibos en la db
+                    foreach (var recibo in recibos)
+                    {
+                        _db.Recibos.Add(recibo);
+                        _db.SaveChanges();
+                    }
+                }
+                
                 return RedirectToAction("Index");
             }
 
@@ -161,9 +158,9 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
         // GET: Prestamos/Edit/5
         public ActionResult Edit(int? id)
         {
-            #region Popular dropDownList con nombres de clientes
-            List<string> NombreClientes = _db.Clientes.Select(c => c.Nombre).ToList();
-            #endregion
+
+            //PrestamoViewModel prestamoViewModel = new PrestamoViewModel();
+            PrestamosService prestamosServ = new PrestamosService();
 
             Prestamo pModel = _db.Prestamos.Find(id);
             Cliente cliente = _db.Clientes.Find(pModel.ClienteId);
@@ -179,12 +176,15 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             {
                 Id = pModel.Id,
                 Cliente = cliente.Nombre,
-                Clientes = obtenerListaClientes(NombreClientes),
+                Clientes = prestamosServ.ObtenerListaClientes(),
                 Monto = pModel.Monto,
                 Fecha = pModel.Fecha,
                 Status = status
 
             };
+
+            //prestamoViewModel = prestamosServ.ObtenerPrestamo(id);
+
             if (prestamoViewModel == null)
             {
                 return HttpNotFound();
@@ -262,64 +262,7 @@ namespace SistemaDeAdministracionDePrestamos.Controllers
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
-        //Este metodo genera una lista con los nombres de los clientes y los prepara
-        // para que puedan utilizarse en el dropDownList (que sean del tipo SelectListItem)
-        private IEnumerable<SelectListItem> obtenerListaClientes(List<string> nombreClientes)
-        {
-            List<SelectListItem> SelectListItem = new List<SelectListItem>();
 
-            foreach (var item in nombreClientes)
-            {
-                SelectListItem.Add(new SelectListItem
-                {
-                    Value = item,
-                    Text = item
-                });
-            }
-
-            return SelectListItem;
-        }
-
-        //Este metodo será invocado por el controlador de prestamos,
-        // al hacerlo, generará los recibos correspondientes a dicho prestamo.
-        private List<Recibo> GenerarRecibos(PrestamoViewModel pModel)
-        {
-
-            if (pModel == null)
-            {
-                return null;
-            }
-
-            else
-            {
-                List<Recibo> receipts = new List<Recibo>();
-
-                int monto = (pModel.Monto / 10);
-
-                DateTime fecha = pModel.Fecha;
-
-                int idPrestamo = pModel.Id;
-
-                bool status = (pModel.Status == PrestamoViewModel.estatus.Activo) ? true : false;
-
-                for (int i = 1; i <= 13; i++)
-                {
-                    fecha = fecha.AddDays(7); 
-
-                    receipts.Add(new Recibo
-                    {
-                        Cuota = i,
-                        MontoPago = monto,
-                        FechaPago = fecha,
-                        Estatus = status,
-                        PrestamoId = idPrestamo
-
-                    });
-                }
-
-                return receipts;
-            }
-        }
         protected override void Dispose(bool disposing)
         {
             if (disposing)
